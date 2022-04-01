@@ -1,1 +1,1 @@
-Note: depending on the user, you will get a different output.
+Write a script that changes the owner of the file hello to the user betty.
