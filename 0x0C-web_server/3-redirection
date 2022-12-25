@@ -1,7 +1,30 @@
 #!/usr/bin/env bash
-# Configure your Nginx server so that /redirect_me is redirecting to another page.
+#install ngix and have a file that returns the string "Hello World inside
 
-sed -i "48i\\\tif (\$request_filename ~ redirect_me){\n\t\t\
-rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;\n\t}" /etc/nginx/sites-available/default
+sudo apt-get update -y
+sudo apt-get install nginx -y
+echo "Hello World!" | sudo tee /var/www/html/index.html
 
-service nginx restart
+new_config=\
+"server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+               root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+        location / {
+                try_files \$uri \$uri/ =404;
+        }
+        if (\$request_filename ~ redirect_me){
+            return 301 https://marketus.com.ng;
+        }
+}
+"
+
+echo "$new_config" > /etc/nginx/sites-available/default
+if [ "$(pgrep nginx)" -le 0 ];
+then
+    service nginx start
+else
+    service nginx restart
+fi;
